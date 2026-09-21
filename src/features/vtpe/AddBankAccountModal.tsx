@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Modal } from "@/design-system/components/Modal";
-import { Button } from "@/design-system/components/Button";
-import { FormField } from "@/design-system/components/FormField";
-import { TextInput } from "@/design-system/components/TextInput";
-import { Alert } from "@/design-system/components/Alert";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, Button, FormField, Input, Modal } from "@/mizaniya";
+import { bankAccountRequestSchema } from "./bank-account-schema";
+import type { BankAccountRequestFormValues } from "./bank-account-schema";
+import { useRequestBankAccountMutation } from "./queries";
+
+const defaultValues: BankAccountRequestFormValues = { holderName: "", bank: "", rib: "" };
 
 export function AddBankAccountModal({
   open,
@@ -16,32 +18,31 @@ export function AddBankAccountModal({
   onClose: () => void;
   onRequested: () => void;
 }) {
-  const [holderName, setHolderName] = useState("");
-  const [bank, setBank] = useState("");
-  const [rib, setRib] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  function reset() {
-    setHolderName("");
-    setBank("");
-    setRib("");
-    setSubmitting(false);
-  }
+  const requestMutation = useRequestBankAccountMutation();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<BankAccountRequestFormValues>({
+    resolver: zodResolver(bankAccountRequestSchema),
+    defaultValues,
+  });
 
   function handleClose() {
-    reset();
+    if (requestMutation.isPending) return;
+    reset(defaultValues);
     onClose();
   }
 
-  async function handleSubmit() {
-    setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    setSubmitting(false);
-    reset();
-    onRequested();
+  function submit(values: BankAccountRequestFormValues) {
+    requestMutation.mutate(values, {
+      onSuccess: () => {
+        reset(defaultValues);
+        onRequested();
+      },
+    });
   }
-
-  const canSubmit = holderName.trim().length > 0 && bank.trim().length > 0 && rib.trim().length > 0;
 
   return (
     <Modal
@@ -52,51 +53,37 @@ export function AddBankAccountModal({
       width="460px"
       footer={
         <>
-          <Button variant="secondary" onClick={handleClose} disabled={submitting}>
+          <Button variant="secondary" onClick={handleClose} disabled={requestMutation.isPending}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} loading={submitting} disabled={!canSubmit}>
-            {submitting ? "Requesting..." : "Request account"}
+          <Button onClick={handleSubmit(submit)} loading={requestMutation.isPending}>
+            {requestMutation.isPending ? "Requesting..." : "Request account"}
           </Button>
         </>
       }
     >
-      <div className="flex flex-col gap-5">
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit(submit)}>
         <Alert
           tone="info"
           title="Verification required"
           description="New bank accounts may require verification before they can receive settlements. We'll notify you once this account is approved."
         />
-        <FormField label="Account holder name" required htmlFor="bank-holder">
-          <TextInput
-            id="bank-holder"
-            placeholder="e.g. Mizaniya Retail SARL"
-            value={holderName}
-            onChange={(e) => setHolderName(e.target.value)}
-          />
+        <FormField label="Account holder name" required htmlFor="bank-holder" error={errors.holderName?.message}>
+          <Input id="bank-holder" placeholder="e.g. Mizaniya Retail SARL" error={Boolean(errors.holderName)} {...register("holderName")} />
         </FormField>
-        <FormField label="Bank" required htmlFor="bank-name">
-          <TextInput
-            id="bank-name"
-            placeholder="e.g. CPA"
-            value={bank}
-            onChange={(e) => setBank(e.target.value)}
-          />
+        <FormField label="Bank" required htmlFor="bank-name" error={errors.bank?.message}>
+          <Input id="bank-name" placeholder="e.g. CPA" error={Boolean(errors.bank)} {...register("bank")} />
         </FormField>
         <FormField
           label="Account number / RIB"
           required
           htmlFor="bank-rib"
-          helperText="20-digit RIB as shown on your bank statement."
+          error={errors.rib?.message}
+          helperText={errors.rib ? undefined : "20-digit RIB as shown on your bank statement."}
         >
-          <TextInput
-            id="bank-rib"
-            placeholder="e.g. 00799999002012345678"
-            value={rib}
-            onChange={(e) => setRib(e.target.value)}
-          />
+          <Input id="bank-rib" placeholder="e.g. 00799999002012345678" error={Boolean(errors.rib)} {...register("rib")} />
         </FormField>
-      </div>
+      </form>
     </Modal>
   );
 }

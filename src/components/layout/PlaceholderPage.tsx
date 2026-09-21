@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { EmptyState } from "@/design-system/components/EmptyState";
+import { EmptyState } from "@/mizaniya";
 import type { Crumb } from "@/components/layout/Breadcrumbs";
 
 export function PlaceholderPage({

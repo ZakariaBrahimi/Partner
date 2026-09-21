@@ -1,12 +1,23 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { SearchInput } from "@/design-system/components/SearchInput";
-import { Select } from "@/design-system/components/Select";
-import { Button } from "@/design-system/components/Button";
+import { Button, SearchInput, Select } from "@/mizaniya";
 
 export type StatusFilter = "all" | "active" | "pending" | "disabled";
 export type CategoryFilter = "all" | "classic" | "business";
+
+const STATUS_OPTIONS = [
+  { value: "all", label: "All statuses" },
+  { value: "active", label: "Active" },
+  { value: "pending", label: "Pending" },
+  { value: "disabled", label: "Disabled" },
+];
+
+const CATEGORY_OPTIONS = [
+  { value: "all", label: "All categories" },
+  { value: "classic", label: "Classic" },
+  { value: "business", label: "Business" },
+];
 
 export function TerminalToolbar({
   search,
@@ -39,24 +50,17 @@ export function TerminalToolbar({
           <Select
             aria-label="Filter by status"
             value={status}
-            onChange={(e) => onStatusChange(e.target.value as StatusFilter)}
+            onValueChange={(v) => onStatusChange(v as StatusFilter)}
+            options={STATUS_OPTIONS}
             className="w-[140px]"
-          >
-            <option value="all">All statuses</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="disabled">Disabled</option>
-          </Select>
+          />
           <Select
             aria-label="Filter by category"
             value={category}
-            onChange={(e) => onCategoryChange(e.target.value as CategoryFilter)}
+            onValueChange={(v) => onCategoryChange(v as CategoryFilter)}
+            options={CATEGORY_OPTIONS}
             className="w-[150px]"
-          >
-            <option value="all">All categories</option>
-            <option value="classic">Classic</option>
-            <option value="business">Business</option>
-          </Select>
+          />
         </div>
       </div>
       <Button leadingIcon={<Plus className="size-4" aria-hidden="true" />} onClick={onCreate}>

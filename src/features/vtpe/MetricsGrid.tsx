@@ -1,5 +1,5 @@
 import { CircleSlash2, Clock, SmartphoneNfc, Wallet } from "lucide-react";
-import { MetricCard } from "@/design-system/components/MetricCard";
+import { MetricCard } from "@/mizaniya";
 import type { Terminal } from "./types";
 
 export function MetricsGrid({ terminals }: { terminals: Terminal[] }) {
