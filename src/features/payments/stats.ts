@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "@/design-system/components/Financial";
+import type { PaymentMethod } from "@/mizaniya/components/financial/payment-method-badge";
 import type { Transaction, TransactionStatus } from "./types";
 
 export interface DateWindow {

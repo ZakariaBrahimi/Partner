@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { CheckCircle2, Clock, Globe, Link2, QrCode, RefreshCw, SmartphoneNfc, Undo2, XCircle } from "lucide-react";
-import { StatusBadge } from "@/design-system/components/Badge";
-import type { StatusTone } from "@/design-system/components/Badge";
+import { StatusBadge } from "@/mizaniya";
+import type { BadgeTone } from "@/mizaniya/components/core/badge";
 import type { TransactionSource, TransactionStatus } from "./types";
 
 const statusConfig: Record<
   TransactionStatus,
-  { label: string; tone: StatusTone; icon: ReactNode }
+  { label: string; tone: BadgeTone; icon: ReactNode }
 > = {
   successful: {
     label: "Successful",

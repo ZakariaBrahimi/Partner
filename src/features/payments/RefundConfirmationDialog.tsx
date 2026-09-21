@@ -1,10 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle } from "lucide-react";
-import { Modal } from "@/design-system/components/Modal";
-import { Button } from "@/design-system/components/Button";
-import { MoneyAmount } from "@/design-system/components/Financial";
+import { Modal, Button, MoneyAmount, Input, FormField } from "@/mizaniya";
+import { createRefundSchema } from "./refund-schema";
+import type { RefundFormValues } from "./refund-schema";
 import type { Transaction } from "./types";
 
 export function RefundConfirmationDialog({
@@ -15,30 +17,49 @@ export function RefundConfirmationDialog({
 }: {
   transaction: Transaction | null;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (amount: number) => void;
   submitting: boolean;
 }) {
   const t = transaction;
+  const schema = createRefundSchema(t?.amount ?? 0);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<RefundFormValues>({
+    resolver: zodResolver(schema),
+    values: t ? { amount: t.amount } : undefined,
+  });
+
+  function handleClose() {
+    reset();
+    onClose();
+  }
+
+  function submit(values: RefundFormValues) {
+    onConfirm(values.amount);
+  }
 
   return (
     <Modal
       open={t !== null}
-      onClose={submitting ? () => {} : onClose}
+      onClose={submitting ? () => {} : handleClose}
       title="Refund this payment?"
       width="440px"
       footer={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={submitting}>
+          <Button variant="secondary" onClick={handleClose} disabled={submitting}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm} loading={submitting}>
+          <Button variant="destructive" onClick={handleSubmit(submit)} loading={submitting}>
             {submitting ? "Refunding..." : "Confirm refund"}
           </Button>
         </>
       }
     >
       {t && (
-        <div className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit(submit)}>
           <div className="flex items-start gap-3 rounded-card border border-error/20 bg-error-soft p-4">
             <AlertTriangle className="mt-0.5 size-[18px] shrink-0 text-error" aria-hidden="true" />
             <p className="text-sm text-error">
@@ -51,10 +72,27 @@ export function RefundConfirmationDialog({
             <Row label="Payment" value={<MoneyAmount value={t.amount} fractionDigits={2} />} />
             <Row label="Transaction" value={t.id} />
             <Row label="Customer" value={t.customer.isGuest ? "Guest customer" : t.customer.name} />
-            <Row label="Refund amount" value={<MoneyAmount value={t.amount} fractionDigits={2} />} />
             <Row label="Destination" value="Original payment method" />
           </div>
-        </div>
+
+          <FormField
+            label="Refund amount"
+            required
+            htmlFor="refund-amount"
+            error={errors.amount?.message}
+            helperText={errors.amount ? undefined : "Partial refunds aren't supported yet — the full amount will be refunded."}
+          >
+            <Input
+              id="refund-amount"
+              type="number"
+              step="0.01"
+              disabled
+              className="tabular-nums"
+              error={Boolean(errors.amount)}
+              {...register("amount", { valueAsNumber: true })}
+            />
+          </FormField>
+        </form>
       )}
     </Modal>
   );

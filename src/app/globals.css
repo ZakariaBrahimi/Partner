@@ -10,12 +10,14 @@
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-muted: var(--color-text-muted);
+  --color-text-disabled: var(--color-text-disabled);
 
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
 
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
   --color-disabled-background: var(--color-disabled-background);
 
   --color-success: var(--color-success);
@@ -37,14 +39,18 @@
   --radius-input: var(--radius-input);
   --radius-button: var(--radius-button);
   --radius-card: var(--radius-card);
+  --radius-dropdown: var(--radius-dropdown);
+  --radius-popover: var(--radius-popover);
   --radius-drawer: var(--radius-drawer);
   --radius-modal: var(--radius-modal);
   --radius-badge: var(--radius-badge);
 
+  --shadow-none: var(--shadow-none);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-drawer: var(--shadow-drawer);
+  --shadow-modal: var(--shadow-modal);
   --shadow-dropdown: var(--shadow-dropdown);
 }
 
@@ -104,4 +110,53 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/*
+ * Base UI popup transitions: components render with data-starting-style
+ * (before first paint) and data-ending-style (while exiting), which we pair
+ * with a plain CSS transition — the officially recommended pattern, since
+ * Base UI keeps the node mounted through both states.
+ */
+.mz-popover-transition {
+  transition: opacity 150ms var(--ease-standard), transform 150ms var(--ease-standard);
+}
+.mz-popover-transition[data-starting-style],
+.mz-popover-transition[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.96) translateY(-4px);
+}
+
+.mz-dialog-transition {
+  transition: opacity 180ms var(--ease-standard), transform 180ms var(--ease-standard);
+}
+.mz-dialog-transition[data-starting-style],
+.mz-dialog-transition[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.96) translateY(4px);
+}
+
+.mz-drawer-transition {
+  transition: transform 220ms var(--ease-standard);
+}
+.mz-drawer-transition[data-starting-style],
+.mz-drawer-transition[data-ending-style] {
+  transform: translateX(100%);
+}
+
+.mz-backdrop-transition {
+  transition: opacity 180ms var(--ease-standard);
+}
+.mz-backdrop-transition[data-starting-style],
+.mz-backdrop-transition[data-ending-style] {
+  opacity: 0;
+}
+
+.mz-tooltip-transition {
+  transition: opacity 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+}
+.mz-tooltip-transition[data-starting-style],
+.mz-tooltip-transition[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.96);
 }

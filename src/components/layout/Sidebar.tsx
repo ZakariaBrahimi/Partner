@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -34,14 +35,10 @@ export function Sidebar() {
         )}
       >
         {collapsed ? (
-          <span className="flex size-9 items-center justify-center rounded-[8px] bg-primary text-sm font-bold text-white">
-            M
-          </span>
+          <Image src="/mizaniya-mark.png" alt="Mizaniya" width={36} height={36} className="rounded-[8px]" priority />
         ) : (
           <div className="flex items-center gap-2.5">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-[8px] bg-primary text-sm font-bold text-white">
-              M
-            </span>
+            <Image src="/mizaniya-mark.png" alt="" width={36} height={36} className="shrink-0 rounded-[8px]" priority />
             <div className="leading-tight">
               <p className="text-sm font-bold text-text-primary">Mizaniya</p>
               <p className="text-xs text-text-secondary">Partner Platform</p>

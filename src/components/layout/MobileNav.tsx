@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -15,9 +16,7 @@ export function MobileNav() {
     <div className="border-b border-border bg-surface md:hidden">
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-[8px] bg-primary text-sm font-bold text-white">
-            M
-          </span>
+          <Image src="/mizaniya-mark.png" alt="Mizaniya" width={32} height={32} className="rounded-[8px]" />
           <p className="text-sm font-bold text-text-primary">Mizaniya</p>
         </div>
         <button

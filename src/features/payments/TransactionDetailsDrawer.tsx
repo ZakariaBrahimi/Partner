@@ -1,10 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Drawer, DrawerSection } from "@/design-system/components/Drawer";
-import { Button } from "@/design-system/components/Button";
-import { MoneyAmount, PaymentMethodBadge, FeeBreakdown } from "@/design-system/components/Financial";
-import { Timeline } from "@/design-system/components/Timeline";
+import { Drawer, DrawerSection, Button, MoneyAmount, PaymentMethodBadge, FeeBreakdown, Timeline } from "@/mizaniya";
 import { TransactionStatusBadge, SourceLabel } from "./badges";
 import { formatFullDateTime } from "./format";
 import { buildTransactionTimeline } from "./timeline";

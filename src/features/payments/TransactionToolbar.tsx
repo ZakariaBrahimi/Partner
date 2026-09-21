@@ -2,13 +2,8 @@
 
 import { useState } from "react";
 import { Columns3, Download } from "lucide-react";
-import { SearchInput } from "@/design-system/components/SearchInput";
-import { FilterPopover } from "@/design-system/components/FilterPopover";
-import type { FilterGroup, FilterValues } from "@/design-system/components/FilterPopover";
-import { Popover } from "@/design-system/components/Popover";
-import { Checkbox } from "@/design-system/components/Checkbox";
-import { Button } from "@/design-system/components/Button";
-import { Dropdown } from "@/design-system/components/Dropdown";
+import { SearchInput, FilterPopover, Popover, Checkbox, Button, DropdownMenu } from "@/mizaniya";
+import type { FilterGroup, FilterValues } from "@/mizaniya";
 
 export type ColumnId =
   | "customer"
@@ -29,7 +24,7 @@ export const OPTIONAL_COLUMNS: { id: ColumnId; label: string }[] = [
   { id: "settlement", label: "Settlement" },
   { id: "refundStatus", label: "Refund status" },
 ];
-const REQUIRED_LABEL: { id: ColumnId; label: string }[] = [
+const TOGGLEABLE_COLUMNS: { id: ColumnId; label: string }[] = [
   { id: "customer", label: "Customer" },
   { id: "source", label: "Source" },
   { id: "method", label: "Payment method" },
@@ -37,6 +32,8 @@ const REQUIRED_LABEL: { id: ColumnId; label: string }[] = [
   { id: "status", label: "Status" },
   { id: "date", label: "Date" },
 ];
+
+export const ALL_COLUMN_IDS: ColumnId[] = [...TOGGLEABLE_COLUMNS.map((c) => c.id), ...OPTIONAL_COLUMNS.map((c) => c.id)];
 
 export function TransactionToolbar({
   search,
@@ -78,17 +75,11 @@ export function TransactionToolbar({
       <div className="flex items-center gap-2">
         <Popover
           open={columnsOpen}
-          onClose={() => setColumnsOpen(false)}
+          onOpenChange={setColumnsOpen}
           align="end"
           width="220px"
           trigger={
-            <Button
-              variant="secondary"
-              leadingIcon={<Columns3 className="size-4" aria-hidden="true" />}
-              onClick={() => setColumnsOpen((v) => !v)}
-              aria-expanded={columnsOpen}
-              aria-haspopup="dialog"
-            >
+            <Button variant="secondary" leadingIcon={<Columns3 className="size-4" aria-hidden="true" />}>
               Columns
             </Button>
           }
@@ -96,13 +87,13 @@ export function TransactionToolbar({
           <div className="p-3">
             <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-text-muted">Visible columns</p>
             <div className="flex flex-col gap-2">
-              {REQUIRED_LABEL.map((col) => (
+              {TOGGLEABLE_COLUMNS.map((col) => (
                 <Checkbox
                   key={col.id}
                   id={`col-${col.id}`}
                   label={col.label}
                   checked={columns.includes(col.id)}
-                  onChange={() => toggleColumn(col.id)}
+                  onCheckedChange={() => toggleColumn(col.id)}
                 />
               ))}
             </div>
@@ -115,14 +106,14 @@ export function TransactionToolbar({
                   id={`col-${col.id}`}
                   label={col.label}
                   checked={columns.includes(col.id)}
-                  onChange={() => toggleColumn(col.id)}
+                  onCheckedChange={() => toggleColumn(col.id)}
                 />
               ))}
             </div>
           </div>
         </Popover>
 
-        <Dropdown
+        <DropdownMenu
           trigger={
             <Button variant="secondary" leadingIcon={<Download className="size-4" aria-hidden="true" />}>
               Export

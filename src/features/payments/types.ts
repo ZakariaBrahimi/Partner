@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "@/design-system/components/Financial";
+import type { PaymentMethod } from "@/mizaniya/components/financial/payment-method-badge";
 
 export type TransactionStatus = "successful" | "pending" | "failed" | "refund_processing" | "refunded";
 export type TransactionSource = "vtpe" | "qr" | "payment_link" | "api";

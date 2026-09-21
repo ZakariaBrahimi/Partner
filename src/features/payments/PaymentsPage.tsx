@@ -1,29 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { CreditCard } from "lucide-react";
+import type { SortingState } from "@tanstack/react-table";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { Pagination } from "@/design-system/components/Pagination";
-import { MetricCardSkeleton } from "@/design-system/components/MetricCard";
-import { Alert } from "@/design-system/components/Alert";
-import { Button } from "@/design-system/components/Button";
-import { useToast } from "@/design-system/components/Toast";
-import { DateRangeSelector, computeRange } from "@/design-system/components/DateRangeSelector";
-import type { DateRange } from "@/design-system/components/DateRangeSelector";
-import type { FilterValues } from "@/design-system/components/FilterPopover";
-import type { SortDirection } from "@/design-system/components/Table";
+import { Pagination, MetricCardSkeleton, Alert, Button, useToast, DateRangePicker, computeDateRange } from "@/mizaniya";
+import type { DateRange, FilterValues } from "@/mizaniya";
 
 import { PaymentMetrics } from "./PaymentMetrics";
 import { PaymentAnalytics } from "./PaymentAnalytics";
 import { PaymentMethods } from "./PaymentMethods";
 import { TransactionToolbar, DEFAULT_COLUMNS } from "./TransactionToolbar";
 import type { ColumnId } from "./TransactionToolbar";
-import { ActiveFilterChips } from "./ActiveFilterChips";
-import { TransactionTable } from "./TransactionTable";
-import type { SortKey } from "./TransactionTable";
+import { ActiveFilters } from "@/mizaniya";
+import { TransactionTable, toColumnVisibilityState } from "./TransactionTable";
 import { TransactionDetailsDrawer } from "./TransactionDetailsDrawer";
 import { RefundConfirmationDialog } from "./RefundConfirmationDialog";
-import { MOCK_TRANSACTIONS } from "./mock-data";
+import { useTransactionsQuery, useRefundPaymentMutation } from "./queries";
 import { buildFilterGroups, matchesFilters } from "./filters";
 import { computeMetrics, buildOutcomeBreakdown, buildMethodBreakdown, inWindow, previousWindow } from "./stats";
 import { transactionsToCsv, downloadCsv } from "./export";
@@ -34,38 +27,28 @@ const PAGE_SIZE = 10;
 
 export default function PaymentsPage() {
   const { showToast } = useToast();
+  const { data: transactions, isPending, isError, refetch } = useTransactionsQuery();
+  const refundMutation = useRefundPaymentMutation();
 
-  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-
-  const [dateRange, setDateRange] = useState<DateRange>(() => computeRange("30d"));
+  const [dateRange, setDateRange] = useState<DateRange>(() => computeDateRange("30d"));
   const [search, setSearch] = useState("");
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const [columns, setColumns] = useState<ColumnId[]>(DEFAULT_COLUMNS);
   const [page, setPage] = useState(1);
-  const [sortKey, setSortKey] = useState<SortKey | null>("date");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: true }]);
 
   const [viewingTransaction, setViewingTransaction] = useState<Transaction | null>(null);
   const [refundingTransaction, setRefundingTransaction] = useState<Transaction | null>(null);
-  const [refundSubmitting, setRefundSubmitting] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setPageLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const allTransactions = useMemo(() => transactions ?? [], [transactions]);
 
   const window_ = useMemo(() => ({ from: dateRange.from, to: dateRange.to }), [dateRange]);
   const previousWindow_ = useMemo(() => previousWindow(window_), [window_]);
 
-  const inRangeTransactions = useMemo(
-    () => transactions.filter((t) => inWindow(t.createdAt, window_)),
-    [transactions, window_],
-  );
+  const inRangeTransactions = useMemo(() => allTransactions.filter((t) => inWindow(t.createdAt, window_)), [allTransactions, window_]);
   const previousRangeTransactions = useMemo(
-    () => transactions.filter((t) => inWindow(t.createdAt, previousWindow_)),
-    [transactions, previousWindow_],
+    () => allTransactions.filter((t) => inWindow(t.createdAt, previousWindow_)),
+    [allTransactions, previousWindow_],
   );
 
   const currentMetrics = useMemo(() => computeMetrics(inRangeTransactions), [inRangeTransactions]);
@@ -74,8 +57,8 @@ export default function PaymentsPage() {
   const methodBreakdown = useMemo(() => buildMethodBreakdown(inRangeTransactions), [inRangeTransactions]);
 
   const terminals = useMemo(
-    () => Array.from(new Set(transactions.flatMap((t) => (t.terminal ? [t.terminal] : [])))).sort(),
-    [transactions],
+    () => Array.from(new Set(allTransactions.flatMap((t) => (t.terminal ? [t.terminal] : [])))).sort(),
+    [allTransactions],
   );
   const filterGroups = useMemo(() => buildFilterGroups(terminals), [terminals]);
 
@@ -91,17 +74,15 @@ export default function PaymentsPage() {
   }, [inRangeTransactions, search, filterValues]);
 
   const sorted = useMemo(() => {
-    if (!sortKey) return filtered;
+    const rule = sorting[0];
+    if (!rule) return filtered;
     const copy = [...filtered];
     copy.sort((a, b) => {
-      const diff =
-        sortKey === "amount"
-          ? a.amount - b.amount
-          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      return sortDirection === "asc" ? diff : -diff;
+      const diff = rule.id === "amount" ? a.amount - b.amount : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return rule.desc ? -diff : diff;
     });
     return copy;
-  }, [filtered, sortKey, sortDirection]);
+  }, [filtered, sorting]);
 
   const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
@@ -130,21 +111,6 @@ export default function PaymentsPage() {
     setFilterValues({});
     resetPage();
   }
-  function handleSort(key: SortKey) {
-    if (sortKey !== key) {
-      setSortKey(key);
-      setSortDirection("desc");
-      return;
-    }
-    if (sortDirection === "desc") {
-      setSortDirection("asc");
-    } else if (sortDirection === "asc") {
-      setSortKey(null);
-      setSortDirection(null);
-    } else {
-      setSortDirection("desc");
-    }
-  }
 
   function handleExport() {
     const csv = transactionsToCsv(sorted);
@@ -152,19 +118,7 @@ export default function PaymentsPage() {
     showToast({ tone: "success", title: "Export ready", description: `${sorted.length} transactions exported to CSV.` });
   }
 
-  async function handleConfirmRefund() {
-    const target = refundingTransaction;
-    if (!target) return;
-    setRefundSubmitting(true);
-
-    const now = new Date().toISOString();
-    setTransactions((prev) =>
-      prev.map((t) =>
-        t.id === target.id
-          ? { ...t, status: "refund_processing", refund: { status: "processing", amount: t.amount, requestedAt: now } }
-          : t,
-      ),
-    );
+  function handleRefund(target: Transaction) {
     setRefundingTransaction(null);
     setViewingTransaction(null);
     showToast({
@@ -173,48 +127,25 @@ export default function PaymentsPage() {
       description: "The refund is being processed. We'll update the transaction once it's completed.",
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1600));
-
-    const succeeded = Math.random() > 0.15;
-    const completedAt = new Date().toISOString();
-
-    setTransactions((prev) =>
-      prev.map((t) => {
-        if (t.id !== target.id) return t;
-        if (succeeded) {
-          return {
-            ...t,
-            status: "refunded",
-            refund: {
-              status: "refunded",
-              amount: t.amount,
-              requestedAt: now,
-              completedAt,
-              reference: `RF-${target.id.replace("TXN-", "")}`,
-            },
-          };
-        }
-        return { ...t, status: "successful", refund: { status: "not_refunded" } };
-      }),
-    );
-    setRefundSubmitting(false);
-
-    if (succeeded) {
-      showToast({
-        tone: "success",
-        title: "Payment refunded successfully.",
-        description: `${target.amount.toLocaleString("en-US")} DA has been refunded to the customer.`,
-      });
-    } else {
-      showToast({
-        tone: "error",
-        title: "Refund could not be completed.",
-        description: "Please try again or contact support if the issue continues.",
-      });
-    }
+    refundMutation.mutate(target.id, {
+      onSuccess: () => {
+        showToast({
+          tone: "success",
+          title: "Payment refunded successfully.",
+          description: `${target.amount.toLocaleString("en-US")} DA has been refunded to the customer.`,
+        });
+      },
+      onError: () => {
+        showToast({
+          tone: "error",
+          title: "Refund could not be completed.",
+          description: "Please try again or contact support if the issue continues.",
+        });
+      },
+    });
   }
 
-  if (loadError) {
+  if (isError) {
     return (
       <div className="mx-auto flex max-w-[1280px] flex-col gap-6">
         <Breadcrumbs items={[{ label: "Payments", href: "/payments/overview" }, { label: "Transactions" }]} />
@@ -223,7 +154,7 @@ export default function PaymentsPage() {
           title="Unable to load payments"
           description="Something went wrong while loading your payments. Please try again."
           action={
-            <Button variant="secondary" size="compact" onClick={() => setLoadError(false)}>
+            <Button variant="secondary" size="compact" onClick={() => refetch()}>
               Retry
             </Button>
           }
@@ -243,15 +174,13 @@ export default function PaymentsPage() {
           </span>
           <div>
             <h1 className="text-2xl font-bold text-text-primary">Payments</h1>
-            <p className="mt-0.5 text-sm text-text-secondary">
-              Monitor payments, track transaction activity, and manage refunds.
-            </p>
+            <p className="mt-0.5 text-sm text-text-secondary">Monitor payments, track transaction activity, and manage refunds.</p>
           </div>
         </div>
-        <DateRangeSelector value={dateRange} onChange={setDateRange} />
+        <DateRangePicker value={dateRange} onChange={setDateRange} />
       </div>
 
-      {pageLoading ? (
+      {isPending ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <MetricCardSkeleton key={i} />
@@ -261,7 +190,7 @@ export default function PaymentsPage() {
         <PaymentMetrics current={currentMetrics} previous={previousMetrics} />
       )}
 
-      {!pageLoading && (
+      {!isPending && (
         <>
           <PaymentAnalytics transactions={inRangeTransactions} window={window_} outcomes={outcomes} />
           <PaymentMethods rows={methodBreakdown} />
@@ -284,51 +213,38 @@ export default function PaymentsPage() {
             onExport={handleExport}
           />
 
-          <ActiveFilterChips
-            groups={filterGroups}
-            values={filterValues}
-            onRemove={handleRemoveFilter}
-            onClearAll={handleClearFilters}
-          />
+          <ActiveFilters groups={filterGroups} values={filterValues} onRemove={handleRemoveFilter} onClearAll={handleClearFilters} />
 
           <TransactionTable
             transactions={paged}
-            loading={pageLoading}
-            columns={columns}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
-            onSort={handleSort}
+            loading={isPending}
+            columnVisibility={toColumnVisibilityState(columns)}
+            sorting={sorting}
+            onSortingChange={setSorting}
             onView={setViewingTransaction}
             onRefund={setRefundingTransaction}
             hasFilters={hasFilters}
             onClearFilters={handleClearFilters}
           />
 
-          {!pageLoading && sorted.length > 0 && (
+          {!isPending && sorted.length > 0 && (
             <Pagination
               page={currentPage}
               pageCount={pageCount}
               onPageChange={setPage}
-              totalLabel={`Showing ${(currentPage - 1) * PAGE_SIZE + 1}–${Math.min(
-                currentPage * PAGE_SIZE,
-                sorted.length,
-              )} of ${sorted.length} transactions`}
+              totalLabel={`Showing ${(currentPage - 1) * PAGE_SIZE + 1}–${Math.min(currentPage * PAGE_SIZE, sorted.length)} of ${sorted.length} transactions`}
             />
           )}
         </div>
       </div>
 
-      <TransactionDetailsDrawer
-        transaction={viewingTransaction}
-        onClose={() => setViewingTransaction(null)}
-        onRefund={setRefundingTransaction}
-      />
+      <TransactionDetailsDrawer transaction={viewingTransaction} onClose={() => setViewingTransaction(null)} onRefund={setRefundingTransaction} />
 
       <RefundConfirmationDialog
         transaction={refundingTransaction}
         onClose={() => setRefundingTransaction(null)}
-        onConfirm={handleConfirmRefund}
-        submitting={refundSubmitting}
+        onConfirm={() => refundingTransaction && handleRefund(refundingTransaction)}
+        submitting={refundMutation.isPending}
       />
     </div>
   );

@@ -14,12 +14,14 @@
   --color-text-primary: #17212b;
   --color-text-secondary: #5f6b76;
   --color-text-muted: #8b96a1;
+  --color-text-disabled: #aeb6bd;
 
   --color-border: #e2e7eb;
   --color-border-strong: #c8d0d7;
 
   --color-background: #f7f9fa;
   --color-surface: #ffffff;
+  --color-surface-muted: #f1f3f5;
   --color-disabled-background: #f1f3f5;
 
   /* Brand active (pressed) state */
@@ -60,15 +62,19 @@
   --radius-input: 8px;
   --radius-button: 8px;
   --radius-card: 12px;
+  --radius-dropdown: 10px;
+  --radius-popover: 12px;
   --radius-drawer: 16px;
   --radius-modal: 16px;
   --radius-badge: 999px;
 
-  /* Shadow */
+  /* Elevation */
+  --shadow-none: none;
   --shadow-xs: 0 1px 2px rgba(23, 33, 43, 0.06);
   --shadow-sm: 0 1px 3px rgba(23, 33, 43, 0.08), 0 1px 2px rgba(23, 33, 43, 0.04);
   --shadow-md: 0 4px 12px rgba(23, 33, 43, 0.08);
   --shadow-drawer: 0 8px 30px rgba(23, 33, 43, 0.16);
+  --shadow-modal: 0 12px 40px rgba(23, 33, 43, 0.18);
   --shadow-dropdown: 0 4px 16px rgba(23, 33, 43, 0.12);
 
   /* Layout */

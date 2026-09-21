@@ -1,4 +1,4 @@
-import type { FilterGroup, FilterValues } from "@/design-system/components/FilterPopover";
+import type { FilterGroup, FilterValues } from "@/mizaniya/components/filters/filter-popover";
 import type { Transaction } from "./types";
 
 const AMOUNT_BUCKETS: Record<string, (amount: number) => boolean> = {

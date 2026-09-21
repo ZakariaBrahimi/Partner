@@ -1,4 +1,4 @@
-import type { TimelineStep } from "@/design-system/components/Timeline";
+import type { TimelineStep } from "@/mizaniya/components/financial/timeline";
 import { CheckCircle2, Clock, RefreshCw, Undo2, XCircle } from "lucide-react";
 import { formatFullDateTime } from "./format";
 import type { Transaction } from "./types";

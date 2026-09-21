@@ -1,4 +1,4 @@
-import { MoneyAmount, PaymentMethodBadge } from "@/design-system/components/Financial";
+import { MoneyAmount, PaymentMethodBadge } from "@/mizaniya";
 import type { MethodBreakdownRow } from "./stats";
 
 export function PaymentMethods({ rows }: { rows: MethodBreakdownRow[] }) {
