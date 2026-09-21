@@ -20,6 +20,10 @@
 
   --color-background: #f7f9fa;
   --color-surface: #ffffff;
+  --color-disabled-background: #f1f3f5;
+
+  /* Brand active (pressed) state */
+  --color-primary-active: #0d3e54;
 
   /* Semantic */
   --color-success: #168a55;

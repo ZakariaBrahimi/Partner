@@ -11,7 +11,7 @@ import {
   SmartphoneNfc,
 } from "lucide-react";
 import { Table, TableHead, Th, TableBody, Tr, Td } from "@/design-system/components/Table";
-import { StatusBadge, CategoryBadge } from "@/design-system/components/Badge";
+import { TerminalStatusBadge, CategoryBadge } from "@/design-system/components/Badge";
 import { MoneyAmount, SettlementMethod } from "@/design-system/components/Financial";
 import { Dropdown } from "@/design-system/components/Dropdown";
 import { IconButton, Button } from "@/design-system/components/Button";
@@ -146,7 +146,7 @@ export function TerminalTable({
                         <SettlementMethod type={terminal.settlementType} />
                       </Td>
                       <Td>
-                        <StatusBadge status={terminal.status} />
+                        <TerminalStatusBadge status={terminal.status} />
                       </Td>
                       <Td className="text-text-secondary">{terminal.lastActivityAt ?? "—"}</Td>
                       <Td align="right" onClick={(e) => e.stopPropagation()}>
@@ -203,7 +203,7 @@ export function TerminalTable({
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <CategoryBadge category={terminal.category} />
-                <StatusBadge status={terminal.status} />
+                <TerminalStatusBadge status={terminal.status} />
               </div>
               <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-sm">
                 <div>

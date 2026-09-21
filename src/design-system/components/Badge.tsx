@@ -2,35 +2,28 @@ import type { ReactNode } from "react";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { cn } from "../utils/cn";
 
-export type TerminalStatus = "active" | "pending" | "disabled";
-export type TerminalCategory = "classic" | "business";
+export type StatusTone = "success" | "warning" | "error" | "info" | "neutral";
 
-const statusConfig: Record<
-  TerminalStatus,
-  { label: string; textClass: string; bgClass: string; icon: ReactNode }
-> = {
-  active: {
-    label: "Active",
-    textClass: "text-success",
-    bgClass: "bg-success-soft",
-    icon: <CheckCircle2 className="size-3" aria-hidden="true" />,
-  },
-  pending: {
-    label: "Pending",
-    textClass: "text-warning",
-    bgClass: "bg-warning-soft",
-    icon: <Clock className="size-3" aria-hidden="true" />,
-  },
-  disabled: {
-    label: "Disabled",
-    textClass: "text-error",
-    bgClass: "bg-error-soft",
-    icon: <XCircle className="size-3" aria-hidden="true" />,
-  },
+const toneClasses: Record<StatusTone, { textClass: string; bgClass: string }> = {
+  success: { textClass: "text-success", bgClass: "bg-success-soft" },
+  warning: { textClass: "text-warning", bgClass: "bg-warning-soft" },
+  error: { textClass: "text-error", bgClass: "bg-error-soft" },
+  info: { textClass: "text-info", bgClass: "bg-info-soft" },
+  neutral: { textClass: "text-text-secondary", bgClass: "bg-background" },
 };
 
-export function StatusBadge({ status }: { status: TerminalStatus }) {
-  const config = statusConfig[status];
+/** Generic status indicator: tone + label + optional icon. Compose domain-specific
+ * status badges (terminal status, transaction status, ...) on top of this. */
+export function StatusBadge({
+  tone,
+  label,
+  icon,
+}: {
+  tone: StatusTone;
+  label: string;
+  icon?: ReactNode;
+}) {
+  const config = toneClasses[tone];
   return (
     <span
       className={cn(
@@ -39,11 +32,38 @@ export function StatusBadge({ status }: { status: TerminalStatus }) {
         config.bgClass,
       )}
     >
-      {config.icon}
-      {config.label}
+      {icon}
+      {label}
     </span>
   );
 }
+
+export type TerminalStatus = "active" | "pending" | "disabled";
+
+const terminalStatusConfig: Record<TerminalStatus, { label: string; tone: StatusTone; icon: ReactNode }> = {
+  active: {
+    label: "Active",
+    tone: "success",
+    icon: <CheckCircle2 className="size-3" aria-hidden="true" />,
+  },
+  pending: {
+    label: "Pending",
+    tone: "warning",
+    icon: <Clock className="size-3" aria-hidden="true" />,
+  },
+  disabled: {
+    label: "Disabled",
+    tone: "error",
+    icon: <XCircle className="size-3" aria-hidden="true" />,
+  },
+};
+
+export function TerminalStatusBadge({ status }: { status: TerminalStatus }) {
+  const config = terminalStatusConfig[status];
+  return <StatusBadge tone={config.tone} label={config.label} icon={config.icon} />;
+}
+
+export type TerminalCategory = "classic" | "business";
 
 const categoryConfig: Record<TerminalCategory, { label: string; textClass: string; bgClass: string }> = {
   classic: {
@@ -78,20 +98,15 @@ export function Badge({
   tone = "neutral",
 }: {
   children: ReactNode;
-  tone?: "neutral" | "success" | "warning" | "error" | "info";
+  tone?: StatusTone;
 }) {
-  const tones: Record<string, string> = {
-    neutral: "text-text-secondary bg-background border border-border",
-    success: "text-success bg-success-soft",
-    warning: "text-warning bg-warning-soft",
-    error: "text-error bg-error-soft",
-    info: "text-info bg-info-soft",
-  };
+  const config = toneClasses[tone];
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1 rounded-badge px-2.5 py-1 text-xs font-semibold",
-        tones[tone],
+        config.textClass,
+        tone === "neutral" ? "border border-border" : config.bgClass,
       )}
     >
       {children}

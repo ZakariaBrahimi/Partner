@@ -1,13 +1,10 @@
-import { Receipt } from "lucide-react";
-import { PlaceholderPage } from "@/components/layout/PlaceholderPage";
+import type { Metadata } from "next";
+import PaymentsPage from "@/features/payments/PaymentsPage";
+
+export const metadata: Metadata = {
+  title: "Payments — Mizaniya Partner Platform",
+};
 
 export default function Page() {
-  return (
-    <PlaceholderPage
-      icon={Receipt}
-      title="Transactions"
-      description="Search and review every transaction processed on your account."
-      breadcrumbs={[{ label: "Payments", href: "/payments/overview" }, { label: "Transactions" }]}
-    />
-  );
+  return <PaymentsPage />;
 }

@@ -18,13 +18,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white border border-primary hover:bg-primary-hover hover:border-primary-hover disabled:bg-border-strong disabled:border-border-strong disabled:text-white",
+    "bg-primary text-white border border-primary hover:bg-primary-hover hover:border-primary-hover active:bg-primary-active active:border-primary-active disabled:bg-border-strong disabled:border-border-strong disabled:text-white",
   secondary:
-    "bg-surface text-text-primary border border-border hover:bg-background hover:border-border-strong disabled:text-text-muted disabled:bg-surface",
+    "bg-surface text-text-primary border border-border hover:bg-background hover:border-border-strong active:bg-disabled-background disabled:text-text-muted disabled:bg-surface",
   tertiary:
-    "bg-transparent text-primary border border-transparent hover:bg-primary-soft disabled:text-text-muted",
+    "bg-transparent text-primary border border-transparent hover:bg-primary-soft active:bg-primary-soft disabled:text-text-muted",
   destructive:
-    "bg-surface text-error border border-border hover:bg-error-soft hover:border-error disabled:text-text-muted disabled:bg-surface",
+    "bg-surface text-error border border-border hover:bg-error-soft hover:border-error active:bg-error-soft disabled:text-text-muted disabled:bg-surface",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

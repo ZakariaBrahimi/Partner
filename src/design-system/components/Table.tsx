@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode, ThHTMLAttributes, TdHTMLAttributes } from "react";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "../utils/cn";
 
 export function Table({ children }: { children: ReactNode }) {
@@ -34,6 +35,45 @@ export function Th({
       {...props}
     >
       {children}
+    </th>
+  );
+}
+
+export type SortDirection = "asc" | "desc" | null;
+
+/** Th variant that toggles sort direction on click — used in place of a
+ * separate sort dropdown when the table's own headers can drive sorting. */
+export function SortableHeader({
+  children,
+  align = "left",
+  direction,
+  onSort,
+}: {
+  children: ReactNode;
+  align?: "left" | "right";
+  direction: SortDirection;
+  onSort: () => void;
+}) {
+  return (
+    <th scope="col" className={cn("px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-muted", align === "right" ? "text-right" : "text-left")}>
+      <button
+        type="button"
+        onClick={onSort}
+        className={cn(
+          "inline-flex items-center gap-1 transition-colors hover:text-text-primary",
+          align === "right" && "flex-row-reverse",
+          direction && "text-text-primary",
+        )}
+      >
+        {children}
+        {direction === "asc" ? (
+          <ArrowUp className="size-3" aria-hidden="true" />
+        ) : direction === "desc" ? (
+          <ArrowDown className="size-3" aria-hidden="true" />
+        ) : (
+          <ChevronsUpDown className="size-3 text-text-muted" aria-hidden="true" />
+        )}
+      </button>
     </th>
   );
 }

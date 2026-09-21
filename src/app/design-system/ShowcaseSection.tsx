@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/design-system/utils/cn";
 
 export function ShowcaseSection({
   title,
@@ -20,8 +21,8 @@ export function ShowcaseSection({
   );
 }
 
-export function ShowcaseRow({ children }: { children: ReactNode }) {
-  return <div className="flex flex-wrap items-center gap-3">{children}</div>;
+export function ShowcaseRow({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("flex flex-wrap items-center gap-3", className)}>{children}</div>;
 }
 
 export function SwatchCard({

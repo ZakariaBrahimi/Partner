@@ -8,6 +8,7 @@ import {
   Download,
   Filter,
   Plus,
+  RefreshCw,
   Search,
   Smartphone,
   SmartphoneNfc,
@@ -18,11 +19,13 @@ import { TextInput, Textarea } from "@/design-system/components/TextInput";
 import { Select } from "@/design-system/components/Select";
 import { SearchInput } from "@/design-system/components/SearchInput";
 import { RadioCard, RadioGroup } from "@/design-system/components/RadioCard";
+import { Checkbox } from "@/design-system/components/Checkbox";
+import { Radio } from "@/design-system/components/Radio";
 import { FormField, CharacterCounter } from "@/design-system/components/FormField";
-import { StatusBadge, CategoryBadge, Badge } from "@/design-system/components/Badge";
+import { StatusBadge, TerminalStatusBadge, CategoryBadge, Badge } from "@/design-system/components/Badge";
 import { MetricCard, MetricCardSkeleton } from "@/design-system/components/MetricCard";
-import { Table, TableHead, Th, TableBody, Tr, Td } from "@/design-system/components/Table";
-import { MoneyAmount, SettlementMethod } from "@/design-system/components/Financial";
+import { Table, TableHead, Th, SortableHeader, TableBody, Tr, Td } from "@/design-system/components/Table";
+import { MoneyAmount, SettlementMethod, PaymentMethodBadge, FeeBreakdown } from "@/design-system/components/Financial";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { LoadingSkeleton, TableRowSkeleton } from "@/design-system/components/LoadingSkeleton";
 import { Pagination } from "@/design-system/components/Pagination";
@@ -33,6 +36,10 @@ import { Dropdown } from "@/design-system/components/Dropdown";
 import { Tooltip } from "@/design-system/components/Tooltip";
 import { Alert } from "@/design-system/components/Alert";
 import { useToast } from "@/design-system/components/Toast";
+import { DateRangeSelector, computeRange } from "@/design-system/components/DateRangeSelector";
+import { FilterPopover } from "@/design-system/components/FilterPopover";
+import { Timeline } from "@/design-system/components/Timeline";
+import { BarChart } from "@/design-system/components/BarChart";
 import { ShowcaseSection, ShowcaseRow, SwatchCard } from "./ShowcaseSection";
 
 export default function DesignSystemPage() {
@@ -43,6 +50,12 @@ export default function DesignSystemPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [descValue, setDescValue] = useState("");
   const [page, setPage] = useState(1);
+  const [checkedA, setCheckedA] = useState(true);
+  const [checkedB, setCheckedB] = useState(false);
+  const [radioOption, setRadioOption] = useState("a");
+  const [dateRange, setDateRange] = useState(() => computeRange("30d"));
+  const [filterValues, setFilterValues] = useState<Record<string, string[]>>({ status: ["successful"] });
+  const [sortDir, setSortDir] = useState<"asc" | "desc" | null>("desc");
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +160,13 @@ export default function DesignSystemPage() {
               />
             </FormField>
           </div>
+          <div className="mt-2 flex flex-wrap items-center gap-6">
+            <Checkbox id="ds-check-a" label="Checked" checked={checkedA} onChange={(e) => setCheckedA(e.target.checked)} />
+            <Checkbox id="ds-check-b" label="Unchecked" checked={checkedB} onChange={(e) => setCheckedB(e.target.checked)} />
+            <Checkbox id="ds-check-disabled" label="Disabled" disabled />
+            <Radio id="ds-radio-a" name="ds-radio" label="Option A" checked={radioOption === "a"} onChange={() => setRadioOption("a")} />
+            <Radio id="ds-radio-b" name="ds-radio" label="Option B" checked={radioOption === "b"} onChange={() => setRadioOption("b")} />
+          </div>
         </ShowcaseSection>
 
         <ShowcaseSection title="Radio cards" description="Large selectable cards used for category and settlement destination.">
@@ -168,11 +188,15 @@ export default function DesignSystemPage() {
           </RadioGroup>
         </ShowcaseSection>
 
-        <ShowcaseSection title="Badges" description="Status, category, and generic badges.">
+        <ShowcaseSection
+          title="Badges"
+          description="StatusBadge is a generic tone + label + icon primitive. Domain badges (terminal status, transaction status, category) compose it rather than duplicating it."
+        >
           <ShowcaseRow>
-            <StatusBadge status="active" />
-            <StatusBadge status="pending" />
-            <StatusBadge status="disabled" />
+            <TerminalStatusBadge status="active" />
+            <TerminalStatusBadge status="pending" />
+            <TerminalStatusBadge status="disabled" />
+            <StatusBadge tone="info" label="Refund processing" icon={<RefreshCw className="size-3" />} />
             <CategoryBadge category="classic" />
             <CategoryBadge category="business" />
             <Badge tone="info">Info</Badge>
@@ -180,13 +204,30 @@ export default function DesignSystemPage() {
           </ShowcaseRow>
         </ShowcaseSection>
 
-        <ShowcaseSection title="Financial primitives" description="Money amounts and settlement method indicators, tabular-aligned.">
+        <ShowcaseSection title="Financial primitives" description="Money amounts, settlement and payment-method indicators, and fee breakdowns — tabular-aligned and reused by vTPE and Payments alike.">
           <ShowcaseRow>
             <MoneyAmount value={2842500} />
+            <MoneyAmount value={10000} fractionDigits={2} />
             <MoneyAmount value={98400} muted />
             <SettlementMethod type="balance" />
             <SettlementMethod type="existing_bank_account" />
           </ShowcaseRow>
+          <ShowcaseRow className="mt-3">
+            <PaymentMethodBadge method="wallet" />
+            <PaymentMethodBadge method="cib" />
+            <PaymentMethodBadge method="edahabia" />
+            <PaymentMethodBadge method="bank_transfer" />
+            <PaymentMethodBadge method="other" />
+          </ShowcaseRow>
+          <div className="mt-4 max-w-sm">
+            <FeeBreakdown
+              rows={[
+                { label: "Payment amount", value: 10000 },
+                { label: "Processing fee", value: 200 },
+                { label: "Net amount", value: 9800, strong: true },
+              ]}
+            />
+          </div>
         </ShowcaseSection>
 
         <ShowcaseSection title="Metric cards" description="KPI cards with icon, trend, and loading skeleton.">
@@ -210,13 +251,19 @@ export default function DesignSystemPage() {
           </div>
         </ShowcaseSection>
 
-        <ShowcaseSection title="Data table" description="Default, loading, and empty states.">
+        <ShowcaseSection title="Data table" description="Default, loading, and empty states, with sortable headers.">
           <div className="flex flex-col gap-6">
             <Table>
               <TableHead>
                 <Th>Terminal</Th>
                 <Th>Category</Th>
-                <Th align="right">Payment volume</Th>
+                <SortableHeader
+                  align="right"
+                  direction={sortDir}
+                  onSort={() => setSortDir((d) => (d === "desc" ? "asc" : d === "asc" ? null : "desc"))}
+                >
+                  Payment volume
+                </SortableHeader>
                 <Th>Settlement</Th>
                 <Th>Status</Th>
               </TableHead>
@@ -229,7 +276,7 @@ export default function DesignSystemPage() {
                   <Td><CategoryBadge category="classic" /></Td>
                   <Td align="right"><MoneyAmount value={284500} /></Td>
                   <Td><SettlementMethod type="balance" /></Td>
-                  <Td><StatusBadge status="active" /></Td>
+                  <Td><TerminalStatusBadge status="active" /></Td>
                 </Tr>
                 <TableRowSkeleton columns={5} />
               </TableBody>
@@ -295,6 +342,68 @@ export default function DesignSystemPage() {
               <IconButton icon={<Search className="size-[18px]" />} label="Search" variant="outline" />
             </Tooltip>
           </ShowcaseRow>
+        </ShowcaseSection>
+
+        <ShowcaseSection
+          title="Date range & filters"
+          description="DateRangeSelector (presets + custom range) and FilterPopover (generic single/multi-select filter groups with an active-count badge) — used together by the Payments page."
+        >
+          <ShowcaseRow>
+            <DateRangeSelector value={dateRange} onChange={setDateRange} />
+            <FilterPopover
+              groups={[
+                {
+                  id: "status",
+                  label: "Status",
+                  type: "multi",
+                  options: [
+                    { value: "successful", label: "Successful" },
+                    { value: "pending", label: "Pending" },
+                    { value: "failed", label: "Failed" },
+                  ],
+                },
+              ]}
+              values={filterValues}
+              onApply={setFilterValues}
+            />
+          </ShowcaseRow>
+        </ShowcaseSection>
+
+        <ShowcaseSection title="Timeline" description="Chronological event list — used for transaction and refund lifecycles.">
+          <div className="max-w-md">
+            <Timeline
+              steps={[
+                { id: "1", label: "Payment initiated", timestamp: "31 Aug 2026, 22:58", tone: "info" },
+                { id: "2", label: "Payment completed", timestamp: "31 Aug 2026, 22:59", tone: "success" },
+                {
+                  id: "3",
+                  label: "Refund requested",
+                  timestamp: "1 Sep 2026, 09:12",
+                  description: "The refund is being processed.",
+                  tone: "info",
+                },
+                { id: "4", label: "Refund completed", timestamp: "1 Sep 2026, 09:40", tone: "neutral" },
+              ]}
+            />
+          </div>
+        </ShowcaseSection>
+
+        <ShowcaseSection title="Bar chart" description="Minimal two-series volume chart — no gridlines or decoration, exact values on hover.">
+          <div className="max-w-2xl">
+            <BarChart
+              valueLabel="Total volume"
+              secondaryLabel="Successful"
+              data={[
+                { label: "Mon", value: 42000, secondaryValue: 38000 },
+                { label: "Tue", value: 51000, secondaryValue: 47000 },
+                { label: "Wed", value: 33000, secondaryValue: 30000 },
+                { label: "Thu", value: 61000, secondaryValue: 52000 },
+                { label: "Fri", value: 58000, secondaryValue: 55000 },
+                { label: "Sat", value: 24000, secondaryValue: 22000 },
+                { label: "Sun", value: 19000, secondaryValue: 18000 },
+              ]}
+            />
+          </div>
         </ShowcaseSection>
 
         <ShowcaseSection title="Toasts" description="Success, error, and info notifications.">
