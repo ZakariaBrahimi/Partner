@@ -16,6 +16,7 @@ export function PaymentMetrics({ current, previous }: { current: PaymentMetricsD
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
       <MetricCard
+        accent="teal"
         icon={<Wallet className="size-[18px]" aria-hidden="true" />}
         title="Total payment volume"
         value={`${new Intl.NumberFormat("en-US").format(current.totalVolume)} DA`}
@@ -24,24 +25,28 @@ export function PaymentMetrics({ current, previous }: { current: PaymentMetricsD
         comparison="vs previous period"
       />
       <MetricCard
+        accent="success"
         icon={<CheckCircle2 className="size-[18px]" aria-hidden="true" />}
         title="Successful payments"
         value={<AnimatedNumber value={current.successfulCount} />}
         comparison={current.successRate !== null ? `${current.successRate.toFixed(1)}% success rate` : "No data yet"}
       />
       <MetricCard
+        accent="error"
         icon={<XCircle className="size-[18px]" aria-hidden="true" />}
         title="Failed payments"
         value={<AnimatedNumber value={current.failedCount} />}
         comparison={current.totalCount > 0 ? `${((current.failedCount / current.totalCount) * 100).toFixed(1)}% of transactions` : "No data yet"}
       />
       <MetricCard
+        accent="violet"
         icon={<Undo2 className="size-[18px]" aria-hidden="true" />}
         title="Refunds"
         value={`${new Intl.NumberFormat("en-US").format(current.refundedVolume)} DA`}
         comparison={`${current.refundedCount} refund${current.refundedCount === 1 ? "" : "s"}`}
       />
       <MetricCard
+        accent="orange"
         icon={<TrendingUp className="size-[18px]" aria-hidden="true" />}
         title="Average payment value"
         value={current.avgValue !== null ? `${new Intl.NumberFormat("en-US").format(Math.round(current.avgValue))} DA` : "—"}

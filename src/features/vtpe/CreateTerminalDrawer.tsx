@@ -142,12 +142,14 @@ export function CreateTerminalDrawer({
                   <RadioGroup name="Category" value={field.value} onValueChange={field.onChange} orientation="horizontal">
                     <RadioCard
                       value="classic"
+                      accent="sky"
                       icon={<Smartphone className="size-[18px]" aria-hidden="true" />}
                       title="Classic"
                       description="Standard terminal for most businesses."
                     />
                     <RadioCard
                       value="business"
+                      accent="violet"
                       icon={<Briefcase className="size-[18px]" aria-hidden="true" />}
                       title="Business"
                       description="Advanced features for higher-volume businesses."
@@ -169,12 +171,14 @@ export function CreateTerminalDrawer({
                   <RadioGroup name="Payment destination" value={field.value} onValueChange={field.onChange}>
                     <RadioCard
                       value="balance"
+                      accent="teal"
                       icon={<Wallet className="size-[18px]" aria-hidden="true" />}
                       title="My Balance"
                       description="Payments will be added to your partner balance and can be withdrawn later."
                     />
                     <RadioCard
                       value="existing_bank_account"
+                      accent="orange"
                       icon={<Landmark className="size-[18px]" aria-hidden="true" />}
                       title="Existing bank account"
                       description="Send payments directly to one of your linked bank accounts."
@@ -206,6 +210,7 @@ export function CreateTerminalDrawer({
                     />
                     <RadioCard
                       value="new_bank_account"
+                      accent="pink"
                       icon={<Landmark className="size-[18px]" aria-hidden="true" />}
                       title="New bank account"
                       description="Request a new bank account to receive payments from this terminal."

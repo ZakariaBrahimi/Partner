@@ -1,4 +1,4 @@
-import { MoneyAmount, PaymentMethodBadge } from "@/mizaniya";
+import { ACCENT_TINTS, MoneyAmount, PaymentMethodBadge, paymentMethodAccent } from "@/mizaniya";
 import type { MethodBreakdownRow } from "./stats";
 
 export function PaymentMethods({ rows }: { rows: MethodBreakdownRow[] }) {
@@ -17,7 +17,7 @@ export function PaymentMethods({ rows }: { rows: MethodBreakdownRow[] }) {
             <div className="flex-1">
               <div className="h-1.5 w-full overflow-hidden rounded-badge bg-background">
                 <div
-                  className="h-full rounded-badge bg-primary"
+                  className={`h-full rounded-badge ${ACCENT_TINTS[paymentMethodAccent(row.method)].solid}`}
                   style={{ width: `${Math.max(row.percentage, 2)}%` }}
                 />
               </div>

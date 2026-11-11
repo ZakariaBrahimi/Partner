@@ -101,7 +101,7 @@ const demoColumns: DataTableColumnDef<DemoRow>[] = [
   {
     id: "category",
     header: "Category",
-    cell: ({ row }) => <Badge tone={row.original.category === "business" ? "info" : "neutral"}>{row.original.category === "business" ? "Business" : "Classic"}</Badge>,
+    cell: ({ row }) => <Badge tone={row.original.category === "business" ? "violet" : "sky"}>{row.original.category === "business" ? "Business" : "Classic"}</Badge>,
   },
   {
     id: "volume",
@@ -230,6 +230,19 @@ export default function DesignSystemPage() {
             </div>
           </ShowcaseSection>
 
+          <ShowcaseSection
+            title="Energy accent colors"
+            description="Vivid, non-semantic identity colors — used for icon chips, charts, badges, and sidebar navigation to give related sections their own visual identity. Pass accent to MetricCard, RadioCard, or Badge's tone."
+          >
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              <SwatchCard name="Violet" variable="--color-accent-violet" hex="#7C3AED" />
+              <SwatchCard name="Sky" variable="--color-accent-sky" hex="#0EA5E9" />
+              <SwatchCard name="Teal" variable="--color-accent-teal" hex="#0D9488" />
+              <SwatchCard name="Orange" variable="--color-accent-orange" hex="#F97316" />
+              <SwatchCard name="Pink" variable="--color-accent-pink" hex="#EC4899" />
+            </div>
+          </ShowcaseSection>
+
           <ShowcaseSection title="Typography" description="Inter, with tabular numerals for financial values.">
             <div className="flex flex-col gap-3">
               <p className="text-[32px] font-bold leading-tight text-text-primary">Display / 32 / 650</p>
@@ -272,7 +285,7 @@ export default function DesignSystemPage() {
             </ShowcaseRow>
           </ShowcaseSection>
 
-          <ShowcaseSection title="Buttons" description="Primary, secondary, tertiary, ghost, destructive, link, and icon buttons — with hover, disabled, and loading states.">
+          <ShowcaseSection title="Buttons" description="Primary carries the brand's signature teal-to-violet gradient. Secondary, tertiary, ghost, destructive, link, and icon variants stay flat for lower emphasis.">
             <ShowcaseRow>
               <Button variant="primary">Primary</Button>
               <Button variant="secondary">Secondary</Button>
@@ -369,16 +382,18 @@ export default function DesignSystemPage() {
             </div>
           </ShowcaseSection>
 
-          <ShowcaseSection title="Radio cards" description="Large selectable cards used for category and settlement destination.">
+          <ShowcaseSection title="Radio cards" description="Large selectable cards used for category and settlement destination. The accent prop tints the icon chip and selection ring.">
             <RadioGroup name="Category" value={radioCardValue} onValueChange={(v) => setRadioCardValue(v as "classic" | "business")} orientation="horizontal">
               <RadioCard
                 value="classic"
+                accent="sky"
                 icon={<Smartphone className="size-[18px]" aria-hidden="true" />}
                 title="Classic"
                 description="Standard terminal for most businesses."
               />
               <RadioCard
                 value="business"
+                accent="violet"
                 icon={<Briefcase className="size-[18px]" aria-hidden="true" />}
                 title="Business"
                 description="Advanced features for higher-volume businesses."
@@ -403,8 +418,15 @@ export default function DesignSystemPage() {
               <StatusBadge tone="error" label="Failed" />
               <StatusBadge tone="info" label="Refund processing" />
               <StatusBadge tone="neutral" label="Refunded" />
+            </ShowcaseRow>
+            <ShowcaseRow className="mt-3">
               <Badge tone="info">Info</Badge>
               <Badge tone="neutral">Neutral</Badge>
+              <Badge tone="violet">Violet</Badge>
+              <Badge tone="sky">Sky</Badge>
+              <Badge tone="teal">Teal</Badge>
+              <Badge tone="orange">Orange</Badge>
+              <Badge tone="pink">Pink</Badge>
             </ShowcaseRow>
           </ShowcaseSection>
 
@@ -433,9 +455,10 @@ export default function DesignSystemPage() {
             </div>
           </ShowcaseSection>
 
-          <ShowcaseSection title="Metric cards" description="KPI cards with icon, trend, animated value tweening, and a loading skeleton.">
+          <ShowcaseSection title="Metric cards" description="KPI cards with icon, trend, animated value tweening, and a loading skeleton. The accent prop tints each card's icon chip so a row of metrics reads as distinct at a glance.">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <MetricCard
+                accent="success"
                 icon={<SmartphoneNfc className="size-[18px]" aria-hidden="true" />}
                 title="Active terminals"
                 value="18"
@@ -443,13 +466,20 @@ export default function DesignSystemPage() {
                 comparison="vs last 30 days"
               />
               <MetricCard
+                accent="pink"
                 icon={<Wallet className="size-[18px]" aria-hidden="true" />}
                 title="Payment volume today"
                 value={<AnimatedNumber value={animatedValue} formatter={(n) => `${Math.round(n).toLocaleString("en-US")} DA`} />}
                 trend="18%"
                 comparison="vs yesterday"
               />
-              <MetricCardSkeleton />
+              <MetricCard
+                accent="violet"
+                icon={<Receipt className="size-[18px]" aria-hidden="true" />}
+                title="Refunds"
+                value="6"
+                comparison="2 pending"
+              />
               <MetricCardSkeleton />
             </div>
             <div className="mt-3">
@@ -464,19 +494,19 @@ export default function DesignSystemPage() {
               <Card>
                 <CardHeader title="Line chart" />
                 <CardBody>
-                  <LineChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "primary" }, { key: "successful", label: "Successful", colorKey: "success" }]} height={200} />
+                  <LineChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "sky" }, { key: "successful", label: "Successful", colorKey: "teal" }]} height={200} />
                 </CardBody>
               </Card>
               <Card>
                 <CardHeader title="Area chart" />
                 <CardBody>
-                  <AreaChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "neutral" }, { key: "successful", label: "Successful", colorKey: "primary" }]} height={200} />
+                  <AreaChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "sky" }, { key: "successful", label: "Successful", colorKey: "teal" }]} height={200} />
                 </CardBody>
               </Card>
               <Card>
                 <CardHeader title="Bar chart" />
                 <CardBody>
-                  <BarChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "primary" }]} height={200} />
+                  <BarChart data={chartData} xKey="label" series={[{ key: "total", label: "Total volume", colorKey: "violet" }]} height={200} />
                 </CardBody>
               </Card>
               <Card>

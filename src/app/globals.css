@@ -34,6 +34,17 @@
   --color-category-business: var(--color-category-business);
   --color-category-business-soft: var(--color-category-business-soft);
 
+  --color-accent-violet: var(--color-accent-violet);
+  --color-accent-violet-soft: var(--color-accent-violet-soft);
+  --color-accent-sky: var(--color-accent-sky);
+  --color-accent-sky-soft: var(--color-accent-sky-soft);
+  --color-accent-teal: var(--color-accent-teal);
+  --color-accent-teal-soft: var(--color-accent-teal-soft);
+  --color-accent-orange: var(--color-accent-orange);
+  --color-accent-orange-soft: var(--color-accent-orange-soft);
+  --color-accent-pink: var(--color-accent-pink);
+  --color-accent-pink-soft: var(--color-accent-pink-soft);
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --radius-input: var(--radius-input);

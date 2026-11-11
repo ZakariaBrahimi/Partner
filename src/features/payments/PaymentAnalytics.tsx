@@ -57,7 +57,7 @@ export function PaymentAnalytics({
                 onClick={() => setGranularity(option.value)}
                 className={cn(
                   "rounded-[6px] px-2.5 py-1 text-xs font-medium transition-colors",
-                  granularity === option.value ? "bg-surface text-text-primary shadow-xs" : "text-text-secondary hover:text-text-primary",
+                  granularity === option.value ? "bg-surface text-accent-teal shadow-xs" : "text-text-secondary hover:text-text-primary",
                 )}
               >
                 {option.label}
@@ -70,8 +70,8 @@ export function PaymentAnalytics({
             data={series}
             xKey="label"
             series={[
-              { key: "total", label: "Total volume", colorKey: "neutral" },
-              { key: "successful", label: "Successful", colorKey: "primary" },
+              { key: "total", label: "Total volume", colorKey: "sky" },
+              { key: "successful", label: "Successful", colorKey: "teal" },
             ]}
           />
         </div>

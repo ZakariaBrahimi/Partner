@@ -10,6 +10,7 @@ export function MetricsGrid({ terminals }: { terminals: Terminal[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <MetricCard
+        accent="success"
         icon={<SmartphoneNfc className="size-[18px]" aria-hidden="true" />}
         title="Active terminals"
         value={String(active)}
@@ -18,6 +19,7 @@ export function MetricsGrid({ terminals }: { terminals: Terminal[] }) {
         comparison="vs last 30 days"
       />
       <MetricCard
+        accent="warning"
         icon={<Clock className="size-[18px]" aria-hidden="true" />}
         title="Pending setup"
         value={String(pending)}
@@ -26,6 +28,7 @@ export function MetricsGrid({ terminals }: { terminals: Terminal[] }) {
         comparison="vs last 30 days"
       />
       <MetricCard
+        accent="error"
         icon={<CircleSlash2 className="size-[18px]" aria-hidden="true" />}
         title="Disabled"
         value={String(disabled)}
@@ -34,6 +37,7 @@ export function MetricsGrid({ terminals }: { terminals: Terminal[] }) {
         comparison="vs last 30 days"
       />
       <MetricCard
+        accent="pink"
         icon={<Wallet className="size-[18px]" aria-hidden="true" />}
         title="Payment volume today"
         value="2,842,500 DA"

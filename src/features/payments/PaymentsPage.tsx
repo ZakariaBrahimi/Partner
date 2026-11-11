@@ -169,7 +169,7 @@ export default function PaymentsPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-card bg-primary-soft text-primary">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-card bg-accent-teal-soft text-accent-teal">
             <CreditCard className="size-5" aria-hidden="true" />
           </span>
           <div>

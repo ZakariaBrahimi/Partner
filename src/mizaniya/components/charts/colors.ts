@@ -13,8 +13,13 @@ export const chartColors = {
   neutral: "#8B96A1",
   border: "#E2E7EB",
   textMuted: "#5F6B76",
+  violet: "#7C3AED",
+  sky: "#0EA5E9",
+  teal: "#0D9488",
+  orange: "#F97316",
+  pink: "#EC4899",
 } as const;
 
 export type ChartColorKey = keyof typeof chartColors;
 
-export const chartSeriesOrder: ChartColorKey[] = ["primary", "success", "info", "warning", "error", "neutral"];
+export const chartSeriesOrder: ChartColorKey[] = ["teal", "violet", "sky", "orange", "pink", "primary", "success", "warning", "error", "neutral"];

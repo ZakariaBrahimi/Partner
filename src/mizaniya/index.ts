@@ -7,6 +7,7 @@ export * from "./components/core/button";
 export * from "./components/core/badge";
 export * from "./components/core/card";
 export * from "./components/core/divider";
+export * from "./components/core/accent";
 
 export * from "./components/forms/input";
 export * from "./components/forms/select";

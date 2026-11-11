@@ -46,6 +46,24 @@
   --color-category-business: #6d4aa8;
   --color-category-business-soft: #f2eefb;
 
+  /*
+   * Energy accent palette — vivid, non-semantic identity colors used for
+   * icon chips, charts, badges and sidebar navigation. Distinct from the
+   * semantic success/warning/error/info tones (which always carry meaning),
+   * these exist purely to give the product visual life and let related
+   * sections/metrics read as distinct at a glance.
+   */
+  --color-accent-violet: #7c3aed;
+  --color-accent-violet-soft: #f3eefd;
+  --color-accent-sky: #0ea5e9;
+  --color-accent-sky-soft: #e8f6fd;
+  --color-accent-teal: #0d9488;
+  --color-accent-teal-soft: #e6f7f5;
+  --color-accent-orange: #f97316;
+  --color-accent-orange-soft: #fff1e6;
+  --color-accent-pink: #ec4899;
+  --color-accent-pink-soft: #fdeef7;
+
   /* Spacing (4px grid) */
   --space-1: 4px;
   --space-2: 8px;

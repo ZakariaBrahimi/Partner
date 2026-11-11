@@ -21,7 +21,10 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-primary text-white border border-primary hover:bg-primary-hover hover:border-primary-hover active:bg-primary-active active:border-primary-active disabled:bg-border-strong disabled:border-border-strong disabled:text-white",
+          "bg-gradient-to-r from-primary to-accent-violet text-white border border-transparent shadow-sm " +
+          "hover:from-primary-hover hover:to-accent-violet hover:shadow-[0_6px_20px_-4px_rgba(124,58,237,0.4)] " +
+          "active:from-primary-active active:to-accent-violet " +
+          "disabled:bg-none disabled:bg-border-strong disabled:border-border-strong disabled:text-white disabled:shadow-none",
         secondary:
           "bg-surface text-text-primary border border-border hover:bg-background hover:border-border-strong active:bg-surface-muted disabled:text-text-disabled disabled:bg-surface",
         tertiary:

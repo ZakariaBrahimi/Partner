@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronsLeft, ChevronsRight, HelpCircle } from "lucide-react";
 import { cn } from "@/design-system/utils/cn";
+import { ACCENT_TINTS } from "@/mizaniya";
 import { NAV } from "./nav-config";
 import type { NavItem, NavLeaf } from "./nav-config";
 
@@ -30,14 +31,18 @@ export function Sidebar() {
     >
       <div
         className={cn(
-          "flex h-16 items-center border-b border-border px-4",
+          "relative flex h-16 items-center overflow-hidden border-b border-border px-4",
           collapsed && "justify-center px-0",
         )}
       >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-6 -top-10 size-28 rounded-full bg-gradient-to-br from-accent-violet/25 via-primary/20 to-accent-sky/25 blur-2xl"
+        />
         {collapsed ? (
-          <Image src="/mizaniya-mark.png" alt="Mizaniya" width={36} height={36} className="rounded-[8px]" priority />
+          <Image src="/mizaniya-mark.png" alt="Mizaniya" width={36} height={36} className="relative rounded-[8px]" priority />
         ) : (
-          <div className="flex items-center gap-2.5">
+          <div className="relative flex items-center gap-2.5">
             <Image src="/mizaniya-mark.png" alt="" width={36} height={36} className="shrink-0 rounded-[8px]" priority />
             <div className="leading-tight">
               <p className="text-sm font-bold text-text-primary">Mizaniya</p>
@@ -114,6 +119,7 @@ function SidebarNavItem({
 }) {
   const active = isActive(pathname, item.href);
   const Icon = item.icon;
+  const tint = ACCENT_TINTS[item.accent ?? "primary"];
 
   return (
     <li>
@@ -125,14 +131,14 @@ function SidebarNavItem({
           "relative flex items-center gap-2.5 rounded-button px-3 py-2 text-sm font-medium transition-colors",
           collapsed && "justify-center px-0",
           active
-            ? "bg-primary-soft text-primary"
+            ? cn(tint.bg, tint.text)
             : "text-text-secondary hover:bg-background hover:text-text-primary",
         )}
       >
         {active && (
           <span
             aria-hidden="true"
-            className="absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-primary"
+            className={cn("absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full", tint.solid)}
           />
         )}
         {Icon && <Icon className="size-[18px] shrink-0" aria-hidden="true" />}
@@ -141,7 +147,7 @@ function SidebarNavItem({
       {item.children && !collapsed && (
         <ul className="ml-[30px] mt-0.5 flex flex-col gap-0.5 border-l border-border pl-3">
           {item.children.map((child) => (
-            <SidebarChildItem key={child.href} item={child} pathname={pathname} />
+            <SidebarChildItem key={child.href} item={child} pathname={pathname} accentText={tint.text} />
           ))}
         </ul>
       )}
@@ -149,7 +155,7 @@ function SidebarNavItem({
   );
 }
 
-function SidebarChildItem({ item, pathname }: { item: NavLeaf; pathname: string }) {
+function SidebarChildItem({ item, pathname, accentText }: { item: NavLeaf; pathname: string; accentText: string }) {
   const active = pathname === item.href;
   return (
     <li>
@@ -158,9 +164,7 @@ function SidebarChildItem({ item, pathname }: { item: NavLeaf; pathname: string 
         aria-current={active ? "page" : undefined}
         className={cn(
           "block rounded-button px-3 py-1.5 text-sm font-medium transition-colors",
-          active
-            ? "text-primary font-semibold"
-            : "text-text-secondary hover:text-text-primary",
+          active ? cn(accentText, "font-semibold") : "text-text-secondary hover:text-text-primary",
         )}
       >
         {item.label}

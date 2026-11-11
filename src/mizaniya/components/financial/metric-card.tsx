@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/design-system/utils/cn";
 import { LoadingSkeleton } from "../data/states";
+import { ACCENT_TINTS } from "../core/accent";
+import type { AccentKey } from "../core/accent";
 
 export function MetricCard({
   icon,
@@ -10,6 +12,7 @@ export function MetricCard({
   trend,
   trendDirection = "up",
   comparison,
+  accent = "primary",
 }: {
   icon: ReactNode;
   title: string;
@@ -17,12 +20,16 @@ export function MetricCard({
   trend?: string;
   trendDirection?: "up" | "down";
   comparison?: string;
+  /** Icon chip color. Defaults to the brand primary; pass a vivid accent to
+   * give a metric its own visual identity in a row of cards. */
+  accent?: AccentKey;
 }) {
   const positive = trendDirection === "up";
+  const tint = ACCENT_TINTS[accent];
   return (
     <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5">
       <div className="flex items-center justify-between">
-        <span className="flex size-9 items-center justify-center rounded-[8px] bg-primary-soft text-primary">{icon}</span>
+        <span className={cn("flex size-9 items-center justify-center rounded-[8px]", tint.bg, tint.text)}>{icon}</span>
         {trend && (
           <span className={cn("inline-flex items-center gap-0.5 text-xs font-semibold", positive ? "text-success" : "text-error")}>
             {positive ? <ArrowUp className="size-3" aria-hidden="true" /> : <ArrowDown className="size-3" aria-hidden="true" />}
